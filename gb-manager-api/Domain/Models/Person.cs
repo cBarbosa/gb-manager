@@ -10,7 +10,7 @@ namespace gb_manager.Domain.Models
         public string Name { get; set; }
         public DateTime? BirthDate { get; set; }
         public string Gender { get; set; }
-        public string _Gender
+        public virtual string _Gender
         {
             get
             {
@@ -46,7 +46,7 @@ namespace gb_manager.Domain.Models
         public string Password { get; set; }
         public bool Verified { get; set; }
         public string Profile { get; set; }
-        public string _Profile { get
+        public virtual string _Profile { get
             {
                 var profileValue = "Desconhecido";
                 switch (Profile)

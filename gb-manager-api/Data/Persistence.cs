@@ -18,7 +18,7 @@ namespace gb_manager.Data
 
         }
 
-        public static int SalvarNaBase(string tabela, object obj, PersistenceMetodos metodo)
+        public int SalvarNaBase(string tabela, object obj, PersistenceMetodos metodo)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace gb_manager.Data
             }
         }
 
-        public static bool ExcluirLogicoDaBase(string tabela, int id)
+        public bool ExcluirLogicoDaBase(string tabela, int id)
         {
             try
             {

@@ -21,17 +21,18 @@ namespace gb_manager.Service
 
         public async Task<CommandResult> Authenticate(AuthenticationCommand auth)
         {
-            var person = await service.GetByLogin(auth.UserName);
+            var _person = await service.GetByLogin(auth.UserName);
+            var _personData = (Domain.Models.Person)_person.Data;
 
-            if (person == null)
+            if (_personData == null)
                 return new CommandResult(false, "Não autenticado", null);
 
-            if (!person.IsPasswordValid(auth.Password))
+            if (!_personData.IsPasswordValid(auth.Password))
                 return new CommandResult(false, "Não autenticado", null);
 
-            logger.LogInformation($"Autenticado com sucesso, {person.Email}");
+            logger.LogInformation($"Autenticado com sucesso, {_personData.Email}");
 
-            return new CommandResult(true, "Autenticado com sucesso", person);
+            return new CommandResult(true, "Autenticado com sucesso", _personData);
         }
     }
 }

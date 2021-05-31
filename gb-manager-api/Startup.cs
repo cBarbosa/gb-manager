@@ -82,6 +82,7 @@ namespace gb_manager
 
             // models/repositories
             services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<Persistence, Persistence>();
 
             // providers
 
