@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace gb_manager.Domain.Models
 {
@@ -15,7 +17,11 @@ namespace gb_manager.Domain.Models
             get
             {
                 var profileValue = "Não informado";
-                switch (Profile)
+                
+                if (Gender == null)
+                    return profileValue;
+
+                switch (Gender.ToUpper())
                 {
                     case "M":
                         profileValue = "Masculino";
@@ -49,7 +55,7 @@ namespace gb_manager.Domain.Models
         public virtual string _Profile { get
             {
                 var profileValue = "Desconhecido";
-                switch (Profile)
+                switch (Profile.ToUpper())
                 {
                     case "C":
                         profileValue = "Cliente";
@@ -71,6 +77,8 @@ namespace gb_manager.Domain.Models
         public DateTime? Created { get; set; }
         public DateTime? Updated { get; set; }
 
+        public virtual IEnumerable<ContractPerson> Contracts { get; set; }
+
         public bool IsPasswordValid(string password)
         {
             return Utils.CryptoUtil.Equals(Password, password);
@@ -80,5 +88,18 @@ namespace gb_manager.Domain.Models
         {
             return Utils.CryptoUtil.CriarHash(password);
         }
+
+        public void AddContract(Person person, Contract contract)
+        {
+            Contracts = Contracts.Concat(new List<ContractPerson>
+            {
+                new ContractPerson
+                {
+                    Person = person,
+                    Contract = contract
+                }
+            });
+        }
+
     }
 }

@@ -79,9 +79,11 @@ namespace gb_manager
             // services
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IPersonService, PersonService>();
+            services.AddScoped<IPlanService, PlanService>();
 
             // models/repositories
             services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IPlanRepository, PlanRepository>();
             services.AddScoped<Persistence, Persistence>();
 
             // providers

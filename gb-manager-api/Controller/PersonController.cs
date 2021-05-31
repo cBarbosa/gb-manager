@@ -19,8 +19,15 @@ namespace gb_manager.Controller
             service = _service;
         }
 
+        [HttpPut("")]
+        public async Task<IActionResult> Put([FromBody] CreatePersonCommand cmd)
+        {
+            var result = await service.Create(cmd);
 
-        [HttpPost("")]
+            return Ok(result);
+        }
+
+        [HttpPost("update")]
         public async Task<IActionResult> Post([FromBody] CreatePersonCommand cmd)
         {
             var result = await service.Create(cmd);

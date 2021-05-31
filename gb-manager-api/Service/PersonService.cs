@@ -93,7 +93,8 @@ namespace gb_manager.Service
                 City = cmd.City,
                 FederativeUnit = cmd.FederativeUnit,
                 Complement = cmd.Complement,
-                Profile = cmd.Profile
+                Profile = cmd.Profile,
+                Active = true
             };
         }
     }
