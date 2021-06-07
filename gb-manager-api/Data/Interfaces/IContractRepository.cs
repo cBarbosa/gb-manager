@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace gb_manager.Data.Interfaces
 {
-    public interface IPlanRepository
+    public interface IContractRepository
     {
-        Task<IEnumerable<Plan>> GetActive();
-        Task<Plan> GetById(int id);
+        Task<Contract> Create(Contract contract);
+        Task<IEnumerable<Contract>> GetByPersonId(int id);
     }
 }

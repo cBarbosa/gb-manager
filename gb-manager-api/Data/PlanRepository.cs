@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace gb_manager.Data
 {
-    public class PlanRepository : PersistenceBase<Plan>, IPlanRepository
+    public class PlanRepository
+        : PersistenceBase<Plan>, IPlanRepository
     {
 
         public PlanRepository(
@@ -38,6 +39,32 @@ namespace gb_manager.Data
 
                 using var conexaoBD = new MySqlConnection(ConnectionString);
                 return await conexaoBD.QueryAsync<Plan>(query);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<Plan> GetById(int id)
+        {
+            try
+            {
+                string query = @"Select
+	                            plan.id
+                                , plan.code
+                                , plan.name
+                                , plan.description
+                                , plan.discount
+                                , plan.discountPercent
+                                , plan.active
+                                , class.id
+                                , class
+                            From plan
+                            Where id = @id;";
+                using var conexaoBD = new MySqlConnection(ConnectionString);
+                return await conexaoBD.QueryFirstAsync<Plan>(query, new { id });
             }
             catch (Exception ex)
             {

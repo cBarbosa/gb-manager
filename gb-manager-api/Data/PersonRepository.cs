@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace gb_manager.Data
 {
-    public class PersonRepository : PersistenceBase<Person>, IPersonRepository
+    public class PersonRepository
+        : PersistenceBase<Person>, IPersonRepository
     {
 
         public PersonRepository(

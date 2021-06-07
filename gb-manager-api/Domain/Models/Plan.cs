@@ -12,6 +12,8 @@ namespace gb_manager.Domain.Models
         public float? DiscountPercent { get; set; }
         public bool Active { get; set; }
 
+        public virtual Class Classes { get; set; }
+
         public DateTime? Created { get; set; }
         public DateTime? Updated { get; set; }
     }

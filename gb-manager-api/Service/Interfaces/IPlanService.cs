@@ -6,5 +6,6 @@ namespace gb_manager.Service.Interfaces
     public interface IPlanService
     {
         Task<CommandResult> GetActive();
+        Task<CommandResult> GetById(int id);
     }
 }

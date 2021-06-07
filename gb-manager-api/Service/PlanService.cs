@@ -27,5 +27,10 @@ namespace gb_manager.Service
         {
             return new CommandResult(true, "Dados carregados com sucesso", await repository.GetActive());
         }
+
+        public async Task<CommandResult> GetById(int id)
+        {
+            return new CommandResult(true, "Dados carregados com sucesso", await repository.GetById(id));
+        }
     }
 }
