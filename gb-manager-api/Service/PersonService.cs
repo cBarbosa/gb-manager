@@ -30,56 +30,101 @@ namespace gb_manager.Service
 
         public async Task<CommandResult> Create(CreatePersonCommand cmd)
         {
-            if (cmd.Id.HasValue)
+            if (cmd.RecordId.HasValue)
                 return await Update(cmd);
 
             var result = await repository.GetByDocument(cmd.Document);
-            var _personData = result.FirstOrDefault();
-
-            if (_personData != null)
+            if (result != null)
             {
-                logger.LogInformation($"Cadastro será atualizado, documento {_personData.Document}");
-                cmd.Id = _personData.Id;
-                return await Update(cmd);
+                logger.LogError($"{Messages.ERROR_PERSON_ALREADY_EXISTS} ({cmd.Document})");
+                return new CommandResult(false, Messages.ERROR_PERSON_ALREADY_EXISTS, cmd);
             }
 
-            var _person = BindPerson(cmd);
-            _person.Active = true;
+            try
+            {
+                var _person = BindPerson(cmd);
+                _person.Active = false;
 
-            _person.Id = await Task.FromResult(persistencia.SalvarNaBase("person", _person, Persistence.PersistenceMetodos.Inserir));
+                var returnId = await Task.FromResult(persistencia.SalvarNaBase("person", _person, Persistence.PersistenceMetodos.Inserir));
 
-            logger.LogInformation($"Cadastrado com sucesso, documento {_person.Document}");
+                logger.LogInformation($"{Messages.SUCCESS_INSERT_PERSON} ({returnId})");
 
-            return new CommandResult(true, $"Cadastrado com sucesso", _person);
+                return new CommandResult(true, Messages.SUCCESS_INSERT_PERSON, _person);
+            }
+            catch (Exception ex)
+            {
+                return new CommandResult(false, Messages.ERROR_INSERT_PERSON, ex);
+            }
         }
 
         public async Task<CommandResult> Update(CreatePersonCommand cmd)
         {
             Person _person = BindPerson(cmd);
+            _person.Active = cmd.Active;
 
-            await Task.FromResult(persistencia.SalvarNaBase("person", _person, Persistence.PersistenceMetodos.Alterar));
+            var _personRecorded = await repository.GetByRecordId(cmd.RecordId.Value);
 
-            logger.LogInformation($"Atualizado com sucesso, documento = {_person.Document}");
+            if (_personRecorded == null)
+            {
+                logger.LogError($"{Messages.ERROR_PERSON_NOT_EXISTS_RECORDID} ({cmd.RecordId})");
+                return new CommandResult(false, Messages.ERROR_PERSON_NOT_EXISTS_RECORDID, cmd);
+            }
 
-            return new CommandResult(true, "Cadastrado com sucesso", _person);
+            try
+            {
+                _ = await Task.FromResult(persistencia.SalvarNaBase("person", _person, Persistence.PersistenceMetodos.Alterar));
+
+                logger.LogInformation($"{Messages.SUCCESS_UPDATE_PERSON} {_person.Document}");
+                return new CommandResult(true, Messages.SUCCESS_UPDATE_PERSON, _person);
+            }
+            catch(Exception ex)
+            {
+                return new CommandResult(false, Messages.ERROR_UPDATE_PERSON, ex);
+            }
         }
 
         public async Task<CommandResult> GetByLogin(string userName)
         {
-            return new CommandResult(true, "Dados carregados com sucesso", await repository.GetByLogin(userName));
+            var result = await repository.GetByLogin(userName);
+
+            return new CommandResult(
+                result!=null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result);
         }
 
         public async Task<CommandResult> GetByDocument(string document)
         {
-            return new CommandResult(true, "Dados carregados com sucesso", await repository.GetByDocument(document));
+            var result = await repository.GetByDocument(document);
+
+            return new CommandResult(
+                result != null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result.ToList());
+        }
+
+        public async Task<CommandResult> GetByRecordId(Guid recordId)
+        {
+            var result = await repository.GetByRecordId(recordId);
+
+            return new CommandResult(
+                result != null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result);
         }
 
         private static Person BindPerson(CreatePersonCommand cmd)
         {
             return new Person
             {
-                Id = cmd.Id,
-                RecordId = !cmd.Id.HasValue ? Guid.NewGuid() : null,
+                //Id = cmd.Id,
+                RecordId = !cmd.RecordId.HasValue ? Guid.NewGuid() : null,
                 Name = cmd.Name,
                 Document = cmd.Document,
                 Email = cmd.Email,
@@ -94,7 +139,7 @@ namespace gb_manager.Service
                 FederativeUnit = cmd.FederativeUnit,
                 Complement = cmd.Complement,
                 Profile = cmd.Profile,
-                Active = true
+                //Active = true
             };
         }
     }

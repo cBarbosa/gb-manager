@@ -21,7 +21,7 @@ namespace gb_manager.Controller
         [HttpGet("")]
         public async Task<IActionResult> Get()
         {
-            var result = await service.GetActive();
+            var result = await service.GetActives();
 
             return Ok(result);
         }

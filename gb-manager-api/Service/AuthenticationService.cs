@@ -21,18 +21,22 @@ namespace gb_manager.Service
 
         public async Task<CommandResult> Authenticate(AuthenticationCommand auth)
         {
-            var _person = await service.GetByLogin(auth.UserName);
-            var _personData = (Domain.Models.Person)_person.Data;
+            var _personData = (Domain.Models.Person)(await service.GetByLogin(auth.UserName)).Data;
 
             if (_personData == null)
-                return new CommandResult(false, "Não autenticado", null);
+            {
+                logger.LogError($"{Messages.ERROR_USER_NOT_EXISTS} {_personData.Email}");
+                return new CommandResult(false, Messages.ERROR_USER_NOT_EXISTS, _personData.Email);
+            }
 
-            if (!_personData.IsPasswordValid(auth.Password))
-                return new CommandResult(false, "Não autenticado", null);
+            if (_personData.IsPasswordValid(auth.Password))
+            {
+                logger.LogInformation($"{Messages.SUCCESS_AUTHENTICATION} {_personData.Email}");
+                return new CommandResult(true, Messages.SUCCESS_AUTHENTICATION, _personData);
+            }
 
-            logger.LogInformation($"Autenticado com sucesso, {_personData.Email}");
-
-            return new CommandResult(true, "Autenticado com sucesso", _personData);
+            logger.LogError($"{Messages.ERROR_AUTHENTICATION} {_personData.Email}");
+            return new CommandResult(false, Messages.ERROR_AUTHENTICATION, null);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace gb_manager.Domain.Shared.Command
 {
     public class CreatePersonCommand
     {
-        public int? Id { get; set; }
+        public Guid? RecordId { get; set; }
         public string Document { get; set; }
         public string Name { get; set; }
         public DateTime? BirthDate { get; set; }
@@ -21,5 +21,6 @@ namespace gb_manager.Domain.Shared.Command
         public string Complement { get; set; }
 
         public string Profile { get; set; }
+        public bool Active { get; set; }
     }
 }

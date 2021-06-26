@@ -27,7 +27,8 @@ namespace gb_manager.Data
             try
             {
                 string query = @"Select
-	                            person.id
+	                            -- person.id
+                                person.recordid
                                 , person.name
                                 , person.document
                                 , person.birthdate
@@ -41,7 +42,7 @@ namespace gb_manager.Data
                                 , person.city
                                 , person.federativeunit
                                 , person.complement
-                                , person.password
+                                -- , person.password
                                 , person.verified
                                 , person.profile
                                 , person.active
@@ -66,7 +67,8 @@ namespace gb_manager.Data
             try
             {
                 string query = @"Select
-	                            person.id
+	                            -- person.id
+                                person.recordid
                                 , person.name
                                 , person.document
                                 , person.birthdate
@@ -92,6 +94,46 @@ namespace gb_manager.Data
 
                 using var conexaoBD = new MySqlConnection(ConnectionString);
                 return await conexaoBD.QueryFirstOrDefaultAsync<Person>(query, param: new { userName });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<Person> GetByRecordId(Guid recordId)
+        {
+            try
+            {
+                string query = @"Select
+	                            -- person.id
+                                person.recordid
+                                , person.name
+                                , person.document
+                                , person.birthdate
+                                , person.gender
+                                , person.email
+                                , person.phone
+                                , person.zipcode
+                                , person.street
+                                , person.number
+                                , person.neighborhood
+                                , person.city
+                                , person.federativeunit
+                                , person.complement
+                                , person.password
+                                , person.verified
+                                , person.profile
+                                , person.active
+                                , person.created
+                                , person.updated
+                            From person
+                            Where active = 1
+                            And recordId = recordId";
+
+                using var conexaoBD = new MySqlConnection(ConnectionString);
+                return await conexaoBD.QueryFirstOrDefaultAsync<Person>(query, param: new { recordId });
             }
             catch (Exception ex)
             {

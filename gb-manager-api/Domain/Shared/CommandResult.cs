@@ -20,9 +20,9 @@ namespace gb_manager.Domain.Shared
         public int? Quantity {
             get
             {
-                if (Data.GetType().IsSerializable)
+                if (Data != null && (Data.GetType().ReflectedType != null && Data.GetType().ReflectedType.Name.Equals("Enumerable")))
                 {
-                    if (Data.GetType().IsSerializable && (((IEnumerable<object>)Data).Count() > 1))
+                    if (Data.GetType().ReflectedType.Name.Equals("Enumerable") && (((IEnumerable<object>)Data).Count() > 1))
                     {
                         return ((IEnumerable<object>)Data).Count();
                     }

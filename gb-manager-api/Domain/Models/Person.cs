@@ -12,13 +12,13 @@ namespace gb_manager.Domain.Models
         public string Name { get; set; }
         public DateTime? BirthDate { get; set; }
         public string Gender { get; set; }
-        public virtual string _Gender
+        public virtual string GenderTitle
         {
             get
             {
                 var profileValue = "Não informado";
                 
-                if (Gender == null)
+                if (string.IsNullOrEmpty(Gender))
                     return profileValue;
 
                 switch (Gender.ToUpper())
@@ -52,9 +52,12 @@ namespace gb_manager.Domain.Models
         public string Password { get; set; }
         public bool Verified { get; set; }
         public string Profile { get; set; }
-        public virtual string _Profile { get
+        public virtual string ProfileTitle { get
             {
                 var profileValue = "Desconhecido";
+                if (string.IsNullOrEmpty(Profile))
+                    return profileValue;
+
                 switch (Profile.ToUpper())
                 {
                     case "C":

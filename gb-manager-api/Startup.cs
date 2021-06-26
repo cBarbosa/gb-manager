@@ -90,6 +90,10 @@ namespace gb_manager
 
             // db factories
             services.AddSingleton<PersistenceBase<Person>, PersonRepository>();
+
+            Dapper.SqlMapper.AddTypeHandler(new Utils.MySqlGuidTypeHandler());
+            Dapper.SqlMapper.RemoveTypeMap(typeof(Guid));
+            Dapper.SqlMapper.RemoveTypeMap(typeof(Guid?));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

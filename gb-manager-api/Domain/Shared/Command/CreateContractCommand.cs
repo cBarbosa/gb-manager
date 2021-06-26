@@ -4,10 +4,9 @@ namespace gb_manager.Domain.Shared.Command
 {
     public class CreateContractCommand
     {
-        public int? Id { get; set; }
-        public int? PlanId { get; set; }
-        public int? PersonId { get; set; }
         public Guid? RecordId { get; set; }
+        public Guid? PlanRecordId { get; set; }
+        public Guid? PersonRecordId { get; set; }
         public int? Installments { get; set; }
         public decimal? Amount { get; set; }
         public int? BillingDay { get; set; }

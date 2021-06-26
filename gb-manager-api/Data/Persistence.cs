@@ -95,8 +95,9 @@ namespace gb_manager.Data
 
                 return retorno;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogError(ex.Message, ex);
                 throw;
             }
         }
@@ -115,8 +116,9 @@ namespace gb_manager.Data
 
                 return retorno;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogError(ex.Message, ex);
                 throw;
             }
         }

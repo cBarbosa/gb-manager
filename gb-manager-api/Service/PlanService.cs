@@ -3,6 +3,7 @@ using gb_manager.Data.Interfaces;
 using gb_manager.Domain.Shared;
 using gb_manager.Service.Interfaces;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace gb_manager.Service
@@ -23,14 +24,28 @@ namespace gb_manager.Service
             repository = _repository;
         }
 
-        public async Task<CommandResult> GetActive()
+        public async Task<CommandResult> GetActives()
         {
-            return new CommandResult(true, "Dados carregados com sucesso", await repository.GetActive());
+            var result = await repository.GetActives();
+
+            return new CommandResult(
+                result != null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result);
         }
 
-        public async Task<CommandResult> GetById(int id)
+        public async Task<CommandResult> GetByRecordId(Guid recordId)
         {
-            return new CommandResult(true, "Dados carregados com sucesso", await repository.GetById(id));
+            var result = await repository.GetByRecordId(recordId);
+
+            return new CommandResult(
+                result != null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result);
         }
     }
 }
