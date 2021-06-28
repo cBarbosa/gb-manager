@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace gb_manager.Domain.Models
 {
@@ -11,7 +12,7 @@ namespace gb_manager.Domain.Models
         public string Description { get; set; }
         public decimal? Value { get; set; }
         public bool Active { get; set; }
-        public virtual Grade Grade { get; set; }
+        public virtual IEnumerable<Grade> Grade { get; set; }
 
         public DateTime? Created { get; set; }
         public DateTime? Updated { get; set; }

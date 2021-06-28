@@ -47,5 +47,23 @@ namespace gb_manager.Service
                     : Messages.ERROR_QUERY),
                 result);
         }
+
+        public async Task<CommandResult> GetClassesByRecordId(Guid recordId)
+        {
+            if ((await GetByRecordId(recordId)).Data is not Domain.Models.Plan _plan)
+            {
+                logger.LogError($"{Messages.ERROR_PLAN_NOT_FOUND} {recordId}");
+                return new CommandResult(false, Messages.ERROR_PLAN_NOT_FOUND, recordId);
+            }
+
+            var result = await repository.GetClassesById(_plan.Id.Value);
+
+            return new CommandResult(
+                result != null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result);
+        }
     }
 }

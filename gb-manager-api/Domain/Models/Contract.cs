@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace gb_manager.Domain.Models
 {
@@ -13,6 +11,8 @@ namespace gb_manager.Domain.Models
         public Guid? RecordId { get; set; }
         public int? Installments { get; set; }
         public decimal? Amount { get; set; }
+        public decimal? MontlyAmount { get; set; }
+        public decimal? DiscountPercent { get; set; }
         public int? BillingDay { get; set; }
         public DateTime? Starts { get; set; }
         public DateTime? Ends { get; set; }
@@ -23,6 +23,6 @@ namespace gb_manager.Domain.Models
 
         public virtual Plan Plan { get; set; }
         public virtual Person Person { get; set; }
-        public virtual IEnumerable<ContractPerson> Persons { get; set; }
+        public virtual IEnumerable<Person> Persons { get; set; }
     }
 }

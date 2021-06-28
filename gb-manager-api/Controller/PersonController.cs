@@ -2,6 +2,7 @@
 using gb_manager.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace gb_manager.Controller
@@ -35,10 +36,21 @@ namespace gb_manager.Controller
             return Ok(result);
         }
 
-        [HttpGet("{document}")]
-        public async Task<IActionResult> GetByDocument([FromRoute] string document)
+        [HttpGet("")]
+        public async Task<IActionResult> Get(
+            [FromQuery] string document,
+            [FromQuery] string name)
         {
-            var result = await service.GetByDocument(document);
+            var result = await service.GetByOptions(document, name);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{recordId}/contracts")]
+        public async Task<IActionResult> GetContracts(
+            [FromRoute] Guid recordId)
+        {
+            var result = await service.GetContracts(recordId);
 
             return Ok(result);
         }

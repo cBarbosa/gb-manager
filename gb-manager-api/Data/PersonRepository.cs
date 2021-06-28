@@ -107,8 +107,8 @@ namespace gb_manager.Data
             try
             {
                 string query = @"Select
-	                            -- person.id
-                                person.recordid
+	                            person.id
+                                , person.recordid
                                 , person.name
                                 , person.document
                                 , person.birthdate
@@ -134,6 +134,46 @@ namespace gb_manager.Data
 
                 using var conexaoBD = new MySqlConnection(ConnectionString);
                 return await conexaoBD.QueryFirstOrDefaultAsync<Person>(query, param: new { recordId });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<Person>> GetByName(string name)
+        {
+            try
+            {
+                string query = @"Select
+	                            -- person.id
+                                person.recordid
+                                , person.name
+                                , person.document
+                                , person.birthdate
+                                , person.gender
+                                , person.email
+                                , person.phone
+                                , person.zipcode
+                                , person.street
+                                , person.number
+                                , person.neighborhood
+                                , person.city
+                                , person.federativeunit
+                                , person.complement
+                                -- , person.password
+                                , person.verified
+                                , person.profile
+                                , person.active
+                                , person.created
+                                , person.updated
+                            From person
+                            Where active = 1
+                            And (@name IS NOT NULL AND name Like CONCAT('%',@name,'%'));";
+
+                using var conexaoBD = new MySqlConnection(ConnectionString);
+                return await conexaoBD.QueryAsync<Person>(query, param: new { name });
             }
             catch (Exception ex)
             {

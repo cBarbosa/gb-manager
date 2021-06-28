@@ -9,5 +9,6 @@ namespace gb_manager.Data.Interfaces
     {
         Task<IEnumerable<Plan>> GetActives();
         Task<Plan> GetByRecordId(Guid recordId);
+        Task<IEnumerable<Class>> GetClassesById(int planId);
     }
 }

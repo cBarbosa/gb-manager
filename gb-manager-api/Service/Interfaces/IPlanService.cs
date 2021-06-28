@@ -8,5 +8,6 @@ namespace gb_manager.Service.Interfaces
     {
         Task<CommandResult> GetActives();
         Task<CommandResult> GetByRecordId(Guid recordId);
+        Task<CommandResult> GetClassesByRecordId(Guid recordId);
     }
 }

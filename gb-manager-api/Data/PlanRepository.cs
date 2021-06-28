@@ -15,6 +15,7 @@ namespace gb_manager.Data
         : PersistenceBase<Plan>, IPlanRepository
     {
         private readonly Dictionary<int, Plan> PlanDictionary;
+        private readonly Dictionary<int, Class> ClassDictionary;
 
         public PlanRepository(
             IConfiguration _configuration
@@ -22,6 +23,7 @@ namespace gb_manager.Data
             : base(_configuration, _logger)
         {
             PlanDictionary = new Dictionary<int, Plan>();
+            ClassDictionary = new Dictionary<int, Class>();
         }
 
         public async Task<IEnumerable<Plan>> GetActives()
@@ -82,11 +84,42 @@ namespace gb_manager.Data
                                 Inner Join planclass On plan.id = planclass.planid
                                 Inner Join class On planclass.classid = class.id
                                 Where plan.active = 1
-                                And recordid = @recordId;";
+                                And plan.recordid = @recordId;";
 
                 using var conexaoBD = new MySqlConnection(ConnectionString);
-                var result = await conexaoBD.QueryAsync<Plan, Class, Plan>(query, MapPlanResults);
+                var result = await conexaoBD.QueryAsync<Plan, Class, Plan>(query, MapPlanResults, param: new { recordId });
                 return result.Distinct().FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<Class>> GetClassesById(int planId)
+        {
+            try
+            {
+                string query = @"Select
+                                    class.id
+	                                , class.recordid
+	                                , class.code
+	                                , class.name
+	                                , class.description
+	                                , class.value
+	                                , grade.id
+	                                , DATE_FORMAT(grade.start, '%H:%i') as start
+	                                , DATE_FORMAT(grade.finish, '%H:%i') as finish
+	                                , grade.weekday
+				                From planclass
+                                Inner join class On planclass.classid = class.id
+                                Inner Join grade On class.id = grade.classid
+                                Where planclass.planid =  @planId;";
+
+                using var conexaoBD = new MySqlConnection(ConnectionString);
+                var result = await conexaoBD.QueryAsync<Class, Grade, Class>(query, MapClassesResults, param: new{ planId });
+                return result.Distinct();
             }
             catch (Exception ex)
             {
@@ -116,6 +149,29 @@ namespace gb_manager.Data
             }
 
             return planEntry;
+        }
+
+        private Class MapClassesResults(
+            Class classItem,
+            Grade gradeItem)
+        {
+            if (!ClassDictionary.TryGetValue(classItem.Id.Value, out Class classEntry))
+            {
+                classEntry = classItem;
+                classEntry.Grade = new List<Grade>();
+                ClassDictionary.Add(classEntry.Id.Value, classEntry);
+            }
+
+            if (gradeItem != null)
+            {
+                if (!classEntry.Grade.Any(x => x.Id.Equals(gradeItem.Id)))
+                {
+                    classEntry.Grade = classEntry.Grade.Concat(
+                    new List<Grade> { gradeItem });
+                }
+            }
+
+            return classEntry;
         }
     }
 }

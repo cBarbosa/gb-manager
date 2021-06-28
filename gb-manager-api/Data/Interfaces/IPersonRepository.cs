@@ -10,5 +10,6 @@ namespace gb_manager.Data.Interfaces
         Task<Person> GetByLogin(string userName);
         Task<Person> GetByRecordId(Guid recordId);
         Task<IEnumerable<Person>> GetByDocument(string document);
+        Task<IEnumerable<Person>> GetByName(string name);
     }
 }

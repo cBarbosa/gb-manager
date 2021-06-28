@@ -16,16 +16,19 @@ namespace gb_manager.Service
 
         private readonly ILogger<PersonService> logger;
         private readonly IPersonRepository repository;
+        private readonly IContractRepository contractRepository;
         private readonly Persistence persistencia;
 
         public PersonService(
             Persistence _persistencia
             , ILogger<PersonService> _logger
-            , IPersonRepository _repository)
+            , IPersonRepository _repository
+            , IContractRepository _contractRepository)
         {
             persistencia = _persistencia;
             logger = _logger;
             repository = _repository;
+            contractRepository = _contractRepository;
         }
 
         public async Task<CommandResult> Create(CreatePersonCommand cmd)
@@ -34,7 +37,7 @@ namespace gb_manager.Service
                 return await Update(cmd);
 
             var result = await repository.GetByDocument(cmd.Document);
-            if (result != null)
+            if (result.Count() > 0)
             {
                 logger.LogError($"{Messages.ERROR_PERSON_ALREADY_EXISTS} ({cmd.Document})");
                 return new CommandResult(false, Messages.ERROR_PERSON_ALREADY_EXISTS, cmd);
@@ -95,10 +98,21 @@ namespace gb_manager.Service
                 result);
         }
 
-        public async Task<CommandResult> GetByDocument(string document)
+        public async Task<CommandResult> GetByOptions(string document, string name)
         {
-            var result = await repository.GetByDocument(document);
+            if (!string.IsNullOrEmpty(document))
+            {
+                var resultByDoc = await repository.GetByDocument(document);
 
+                return new CommandResult(
+                    resultByDoc != null,
+                    (resultByDoc != null
+                        ? Messages.SUCCESS_QUERY
+                        : Messages.ERROR_QUERY),
+                    resultByDoc.ToList());
+            }
+
+            var result = await repository.GetByName(name);
             return new CommandResult(
                 result != null,
                 (result != null
@@ -110,6 +124,24 @@ namespace gb_manager.Service
         public async Task<CommandResult> GetByRecordId(Guid recordId)
         {
             var result = await repository.GetByRecordId(recordId);
+
+            return new CommandResult(
+                result != null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result);
+        }
+
+        public async Task<CommandResult> GetContracts(Guid recordId)
+        {
+            if ((await GetByRecordId(recordId)).Data is not Person _person)
+            {
+                logger.LogError($"{Messages.ERROR_PERSON_NOT_EXISTS_RECORDID} ({recordId})");
+                return new CommandResult(false, Messages.ERROR_PERSON_NOT_EXISTS_RECORDID, recordId);
+            }
+
+            var result = await contractRepository.GetByPersonId(_person.Id.Value);
 
             return new CommandResult(
                 result != null,

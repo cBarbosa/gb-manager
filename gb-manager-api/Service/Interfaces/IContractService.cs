@@ -1,5 +1,6 @@
 ﻿using gb_manager.Domain.Shared;
 using gb_manager.Domain.Shared.Command;
+using System;
 using System.Threading.Tasks;
 
 namespace gb_manager.Service.Interfaces
@@ -8,5 +9,8 @@ namespace gb_manager.Service.Interfaces
     {
         Task<CommandResult> Create(CreateContractCommand cmd);
         Task<CommandResult> Update(CreateContractCommand cmd);
+        Task<CommandResult> AddPerson(Guid contractId, Guid personId);
+        Task<CommandResult> GetByRecordId(Guid recordId);
+        Task<CommandResult> GetByPersonId(int personid);
     }
 }

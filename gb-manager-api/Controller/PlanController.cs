@@ -1,6 +1,7 @@
 ﻿using gb_manager.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace gb_manager.Controller
@@ -22,6 +23,14 @@ namespace gb_manager.Controller
         public async Task<IActionResult> Get()
         {
             var result = await service.GetActives();
+
+            return Ok(result);
+        }
+
+        [HttpGet("{recordId}/classes")]
+        public async Task<IActionResult> GetClassesByRecordId([FromRoute] Guid recordId)
+        {
+            var result = await service.GetClassesByRecordId(recordId);
 
             return Ok(result);
         }

@@ -80,16 +80,20 @@ namespace gb_manager
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IPlanService, PlanService>();
+            services.AddScoped<IContractService, ContractService>();
 
             // models/repositories
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<IPlanRepository, PlanRepository>();
+            services.AddScoped<IContractRepository, ContractRepository>();
             services.AddScoped<Persistence, Persistence>();
 
             // providers
 
             // db factories
             services.AddSingleton<PersistenceBase<Person>, PersonRepository>();
+            services.AddSingleton<PersistenceBase<Plan>, PlanRepository>();
+            services.AddSingleton<PersistenceBase<Contract>, ContractRepository>();
 
             Dapper.SqlMapper.AddTypeHandler(new Utils.MySqlGuidTypeHandler());
             Dapper.SqlMapper.RemoveTypeMap(typeof(Guid));

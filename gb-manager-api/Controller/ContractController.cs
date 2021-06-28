@@ -2,6 +2,7 @@
 using gb_manager.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace gb_manager.Controller
@@ -23,6 +24,31 @@ namespace gb_manager.Controller
         public async Task<IActionResult> Put([FromBody] CreateContractCommand cmd)
         {
             var result = await service.Create(cmd);
+
+            return Ok(result);
+        }
+
+        [HttpPut("add-person")]
+        public async Task<IActionResult> PutPerson(
+            [FromBody] CreateContractCommand cmd)
+        {
+            var result = await service.AddPerson(cmd.RecordId.Value, cmd.PersonRecordId.Value);
+
+            return Ok(result);
+        }
+
+        [HttpPost("")]
+        public async Task<IActionResult> Post([FromBody] CreateContractCommand cmd)
+        {
+            var result = await service.Update(cmd);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{recordId}")]
+        public async Task<IActionResult> Post([FromRoute] Guid recordId)
+        {
+            var result = await service.GetByRecordId(recordId);
 
             return Ok(result);
         }
