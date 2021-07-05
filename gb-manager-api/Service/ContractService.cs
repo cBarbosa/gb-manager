@@ -188,9 +188,9 @@ namespace gb_manager.Service
                 result);
         }
 
-        public async Task<CommandResult> GetByPersonId(int personid)
+        public async Task<CommandResult> GetByPersonRecordId(Guid personRecordId)
         {
-            var result = await repository.GetByPersonId(personid);
+            var result = await repository.GetByPersonRecordId(personRecordId);
 
             return new CommandResult(
                 result != null,

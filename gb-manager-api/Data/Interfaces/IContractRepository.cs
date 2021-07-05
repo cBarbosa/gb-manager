@@ -7,7 +7,7 @@ namespace gb_manager.Data.Interfaces
 {
     public interface IContractRepository
     {
-        Task<IEnumerable<Contract>> GetByPersonId(int personId);
+        Task<IEnumerable<Contract>> GetByPersonRecordId(Guid personRecordId);
         Task<Contract> GetByRecordId(Guid recordId);
     }
 }

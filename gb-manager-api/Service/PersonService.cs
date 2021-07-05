@@ -141,7 +141,7 @@ namespace gb_manager.Service
                 return new CommandResult(false, Messages.ERROR_PERSON_NOT_EXISTS_RECORDID, recordId);
             }
 
-            var result = await contractRepository.GetByPersonId(_person.Id.Value);
+            var result = await contractRepository.GetByPersonRecordId(_person.RecordId.Value);
 
             return new CommandResult(
                 result != null,

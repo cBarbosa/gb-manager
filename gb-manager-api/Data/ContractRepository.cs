@@ -24,7 +24,7 @@ namespace gb_manager.Data
             ContractDictionary = new Dictionary<int, Contract>();
         }
 
-        public async Task<IEnumerable<Contract>> GetByPersonId(int personId)
+        public async Task<IEnumerable<Contract>> GetByPersonRecordId(Guid personRecordId)
         {
             try
             {
@@ -60,10 +60,10 @@ namespace gb_manager.Data
                                 Inner join person on contract.personid = person.id
                                 Left join contractperson on contract.id = contractperson.contractid
                                 Left join person As persons on contractperson.personid = persons.id
-                            Where contract.personId = @personId";
+                            Where persons.recordid = @personRecordId";
 
                 using var conexaoBD = new MySqlConnection(ConnectionString);
-                var result = await conexaoBD.QueryAsync<Contract, Plan, Person, Person, Contract>(query, MapContractResults, param: new { personId });
+                var result = await conexaoBD.QueryAsync<Contract, Plan, Person, Person, Contract>(query, MapContractResults, param: new { personRecordId });
 
                 return result.Distinct();
             }

@@ -11,6 +11,6 @@ namespace gb_manager.Service.Interfaces
         Task<CommandResult> Update(CreateContractCommand cmd);
         Task<CommandResult> AddPerson(Guid contractId, Guid personId);
         Task<CommandResult> GetByRecordId(Guid recordId);
-        Task<CommandResult> GetByPersonId(int personid);
+        Task<CommandResult> GetByPersonRecordId(Guid personRecordId);
     }
 }

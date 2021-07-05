@@ -45,8 +45,17 @@ namespace gb_manager.Controller
             return Ok(result);
         }
 
+        [HttpGet("person/{recordId}")]
+        public async Task<IActionResult> GetByPersonRecordId([FromRoute] Guid recordId)
+        {
+            var result = await service.GetByPersonRecordId(recordId);
+
+            return Ok(result);
+        }
+
         [HttpGet("{recordId}")]
-        public async Task<IActionResult> Post([FromRoute] Guid recordId)
+        public async Task<IActionResult> GetByRecordId(
+            [FromRoute] Guid recordId)
         {
             var result = await service.GetByRecordId(recordId);
 

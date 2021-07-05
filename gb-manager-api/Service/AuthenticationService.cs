@@ -25,8 +25,8 @@ namespace gb_manager.Service
 
             if (_personData == null)
             {
-                logger.LogError($"{Messages.ERROR_USER_NOT_EXISTS} {_personData.Email}");
-                return new CommandResult(false, Messages.ERROR_USER_NOT_EXISTS, _personData.Email);
+                logger.LogError($"{Messages.ERROR_USER_NOT_EXISTS} {auth.UserName}");
+                return new CommandResult(false, Messages.ERROR_USER_NOT_EXISTS, auth.UserName);
             }
 
             if (_personData.IsPasswordValid(auth.Password))
