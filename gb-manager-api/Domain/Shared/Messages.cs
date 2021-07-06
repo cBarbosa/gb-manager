@@ -27,5 +27,6 @@
         public const string ERROR_CONTRACT_ADD_PERSON = "Não foi possivel adicionar a pessoa";
         public const string ERROR_CLASSES_NOT_FOUND_TO_PLAN = "Modalidade(s) não encontrada(s) para o plano informado";
         public const string ERROR_UPDATE_CONTRACT = "Erro ao atualizar o contrato";
+        public static string ERROR_UPDATE_CONTRACT_IS_ALREADY_ACTIVE = "O contrato informado já está ativo, não pode ser alterado";
     }
 }

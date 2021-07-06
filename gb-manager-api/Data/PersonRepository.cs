@@ -130,7 +130,7 @@ namespace gb_manager.Data
                                 , person.updated
                             From person
                             Where active = 1
-                            And recordId = recordId";
+                            And recordId = @recordId";
 
                 using var conexaoBD = new MySqlConnection(ConnectionString);
                 return await conexaoBD.QueryFirstOrDefaultAsync<Person>(query, param: new { recordId });

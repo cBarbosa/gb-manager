@@ -51,16 +51,20 @@ namespace gb_manager.Data
                                     , person.recordid
                                     , person.name
                                     , person.document
+                                    , person.gender
+                                    , person.active
                                     , persons.id
                                     , persons.recordid
                                     , persons.name
                                     , persons.document
+                                    , persons.gender
+                                    , persons.active
                                 From contract
                                 Inner join plan on contract.planid = plan.id
                                 Inner join person on contract.personid = person.id
                                 Left join contractperson on contract.id = contractperson.contractid
                                 Left join person As persons on contractperson.personid = persons.id
-                            Where persons.recordid = @personRecordId";
+                            Where person.recordid = @personRecordId";
 
                 using var conexaoBD = new MySqlConnection(ConnectionString);
                 var result = await conexaoBD.QueryAsync<Contract, Plan, Person, Person, Contract>(query, MapContractResults, param: new { personRecordId });
@@ -122,6 +126,11 @@ namespace gb_manager.Data
                 logger.LogError(ex.Message);
                 return null;
             }
+        }
+
+        public Task<Installment> GetInstallmentsByRecordId(Guid recordId)
+        {
+            throw new NotImplementedException();
         }
 
         private Contract MapContractResults(

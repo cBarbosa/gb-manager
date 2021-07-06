@@ -98,8 +98,14 @@ namespace gb_manager.Service
         {
             if ((await GetByRecordId(cmd.RecordId.Value)).Data is not Contract _contract)
             {
-                logger.LogError($"{Messages.ERROR_CONTRACT_NOT_EXISTS_RECORDID} {cmd.RecordId.Value}");
-                return new CommandResult(false, Messages.ERROR_CONTRACT_NOT_EXISTS_RECORDID, cmd.RecordId.Value);
+                logger.LogError($"{Messages.ERROR_CONTRACT_NOT_EXISTS_RECORDID} {cmd.RecordId}");
+                return new CommandResult(false, Messages.ERROR_CONTRACT_NOT_EXISTS_RECORDID, cmd.RecordId);
+            }
+
+            if (_contract.Active)
+            {
+                logger.LogError($"{Messages.ERROR_UPDATE_CONTRACT_IS_ALREADY_ACTIVE} {cmd.RecordId}");
+                return new CommandResult(false, Messages.ERROR_UPDATE_CONTRACT_IS_ALREADY_ACTIVE, cmd.PlanRecordId);
             }
 
             if ((await planService.GetClassesByRecordId(_contract.Plan.RecordId.Value)).Data is not IEnumerable<Class> _classes)
@@ -108,15 +114,18 @@ namespace gb_manager.Service
                 return new CommandResult(false, Messages.ERROR_CLASSES_NOT_FOUND_TO_PLAN, cmd.PlanRecordId);
             }
 
-            if (cmd.Installments.HasValue && cmd.BillingDay.HasValue)
-            {
-                var _startContract = GetContractInitialDate(cmd);
-                cmd.Starts = _startContract;
-                cmd.Ends = _startContract.AddMonths(cmd.Installments.Value);
-            }
-
+            cmd.BillingDay = cmd.BillingDay.HasValue ? cmd.BillingDay : 10;
+            cmd.Installments = _contract.Installments;
+            cmd.Starts = GetContractInitialDate(cmd);
+            cmd.Ends = cmd.Starts.Value.AddMonths(_contract.Installments.Value);
             _contract.DiscountPercent = cmd.DiscountPercent;
-            _contract.Active = cmd.Active;
+
+            if (!_contract.Active && cmd.Active)
+            {
+                _contract.Active = cmd.Active;
+                _contract.Updated = DateTime.Now;
+                _ = await GenerateInstallments(_contract);
+            }
 
             UpdateAmount(_contract, _classes);
 
@@ -129,7 +138,7 @@ namespace gb_manager.Service
                     Persistence.PersistenceMetodos.Alterar));
 
                 logger.LogInformation($"{Messages.SUCCESS_UPDATE_CONTRACT}, {cmd}");
-                return new CommandResult(true, Messages.SUCCESS_UPDATE_CONTRACT, cmd);
+                return new CommandResult(true, Messages.SUCCESS_UPDATE_CONTRACT, _contract);
             }
             catch (Exception ex)
             {
@@ -200,9 +209,24 @@ namespace gb_manager.Service
                 result);
         }
 
+        public async Task<CommandResult> GetInstallmentsByRecordId(Guid recordId)
+        {
+            var result = await repository.GetInstallmentsByRecordId(recordId);
+
+            return new CommandResult(
+                result != null,
+                (result != null
+                    ? Messages.SUCCESS_QUERY
+                    : Messages.ERROR_QUERY),
+                result);
+        }
+
         private static DateTime GetContractInitialDate(CreateContractCommand cmd)
         {
             var startContract = new DateTime(DateTime.Now.Year, DateTime.Now.Month, cmd.BillingDay.Value);
+
+            if (cmd.Installments.Value.Equals(1))
+                return DateTime.Today;
 
             if (cmd.BillingDay.Value > DateTime.Now.Day)
                 startContract = startContract.AddMonths(1);
@@ -217,10 +241,74 @@ namespace gb_manager.Service
                 amount += classItem.Value.Value - (_contract.DiscountPercent.HasValue ? classItem.Value.Value * (_contract.DiscountPercent.Value / 100) : 0);
             amount *= _contract.Persons.Count();
 
-            decimal montlyAmount = (amount / _contract.Persons.Count());
+            decimal montlyAmount = (amount / _contract.Installments.Value);
 
             _contract.Amount = amount;
             _contract.MontlyAmount = montlyAmount;
+        }
+
+        private async Task<IEnumerable<Installment>> GenerateInstallments(Contract contract)
+        {
+            var installmentList = new List<Installment>();
+
+            for (int i = 0; i < contract.Installments.Value; i++)
+            {
+                var _billet = await CreateBillet(new Billet
+                {
+                    RecordId = Guid.NewGuid(),
+                    Amount = contract.MontlyAmount,
+                    DueDate = contract.Starts.Value.AddMonths(i),
+                });
+
+                installmentList.Add(await CreateInstallment(new Installment
+                {
+                    RecordId = Guid.NewGuid(),
+                    ContractId = contract.Id,
+                    Amount = contract.MontlyAmount,
+                    DueDate = contract.Starts.Value.AddMonths(i),
+                    Type = "B",
+                    BilletId = _billet.Id,
+                    Billet = _billet
+                }));
+            }
+
+            return installmentList;
+        }
+
+        private async Task<Installment> CreateInstallment(Installment installment)
+        {
+            try
+            {
+                installment.Id = await Task.FromResult(
+                    persistencia.SalvarNaBase(
+                        "installment",
+                        installment,
+                        Persistence.PersistenceMetodos.Inserir));
+
+                return installment;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private async Task<Billet> CreateBillet(Billet billet)
+        {
+            try
+            {
+                billet.Id = await Task.FromResult(
+                    persistencia.SalvarNaBase(
+                        "billet",
+                        billet,
+                        Persistence.PersistenceMetodos.Inserir));
+
+                return billet;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

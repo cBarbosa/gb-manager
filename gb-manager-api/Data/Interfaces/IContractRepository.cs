@@ -9,5 +9,6 @@ namespace gb_manager.Data.Interfaces
     {
         Task<IEnumerable<Contract>> GetByPersonRecordId(Guid personRecordId);
         Task<Contract> GetByRecordId(Guid recordId);
+        Task<Installment> GetInstallmentsByRecordId(Guid recordId);
     }
 }
