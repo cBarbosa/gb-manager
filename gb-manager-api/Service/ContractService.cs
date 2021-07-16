@@ -253,22 +253,13 @@ namespace gb_manager.Service
 
             for (int i = 0; i < contract.Installments.Value; i++)
             {
-                var _billet = await CreateBillet(new Billet
-                {
-                    RecordId = Guid.NewGuid(),
-                    Amount = contract.MontlyAmount,
-                    DueDate = contract.Starts.Value.AddMonths(i),
-                });
-
                 installmentList.Add(await CreateInstallment(new Installment
                 {
                     RecordId = Guid.NewGuid(),
                     ContractId = contract.Id,
                     Amount = contract.MontlyAmount,
                     DueDate = contract.Starts.Value.AddMonths(i),
-                    Type = "B",
-                    BilletId = _billet.Id,
-                    Billet = _billet
+                    Type = "O"
                 }));
             }
 

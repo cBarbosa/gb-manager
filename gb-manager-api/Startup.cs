@@ -1,6 +1,8 @@
 using gb_manager.Data;
 using gb_manager.Data.Interfaces;
 using gb_manager.Domain.Models;
+using gb_manager.Infraestructure.ExternalServices.MercadoPago;
+using gb_manager.Infraestructure.ExternalServices.MercadoPago.Serialization;
 using gb_manager.Service;
 using gb_manager.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace gb_manager
@@ -76,11 +79,21 @@ namespace gb_manager
                 };
             });
 
+            services.AddHttpClient("MercadoPago", c =>
+            {
+                c.BaseAddress = new Uri(Configuration["ExternalServices:MercadoPago:BaseHost"]);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("User-Agent", "pay-as-go");
+                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
+                    ("Bearer", Configuration["ExternalServices:MercadoPago:AccessToken"]);
+            });
+
             // services
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IPlanService, PlanService>();
             services.AddScoped<IContractService, ContractService>();
+            services.AddScoped<IPaymentService, PaymentService>();
 
             // models/repositories
             services.AddScoped<IPersonRepository, PersonRepository>();
@@ -89,6 +102,8 @@ namespace gb_manager
             services.AddScoped<Persistence, Persistence>();
 
             // providers
+            services.AddScoped<IMercadoPagoService, MercadoPagoService>();
+            services.AddScoped<ISerializer, DefaultSerializer>();
 
             // db factories
             services.AddSingleton<PersistenceBase<Person>, PersonRepository>();

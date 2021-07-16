@@ -24,5 +24,7 @@ namespace gb_manager.Domain.Models
         public virtual Plan Plan { get; set; }
         public virtual Person Person { get; set; }
         public virtual IEnumerable<Person> Persons { get; set; }
+        public virtual IEnumerable<Installment> InstallmentList { get; set; }
+        public virtual IEnumerable<Transaction> TransactionList { get; set; }
     }
 }

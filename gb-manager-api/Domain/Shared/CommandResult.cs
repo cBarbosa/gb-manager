@@ -22,7 +22,7 @@ namespace gb_manager.Domain.Shared
             {
                 if (Data != null && (Data.GetType().ReflectedType != null && Data.GetType().ReflectedType.Name.Equals("Enumerable")))
                 {
-                    if (Data.GetType().ReflectedType.Name.Equals("Enumerable") && (((IEnumerable<object>)Data).Count() > 1))
+                    if (Data.GetType().ReflectedType.Name.Equals("Enumerable") && (((IEnumerable<object>)Data).Count() > 0))
                     {
                         return ((IEnumerable<object>)Data).Count();
                     }

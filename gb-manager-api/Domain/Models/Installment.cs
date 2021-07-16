@@ -11,11 +11,12 @@ namespace gb_manager.Domain.Models
         public DateTime? DueDate { get; set; }
         public DateTime? Receipt { get; set; }
         public string Type { get; set; }
-        public int? BilletId { get; set; }
-        public virtual Billet Billet { get; set; }
 
         public DateTime? Created { get; set; }
         public DateTime? Updated { get; set; }
+
+        public virtual Contract Contract { get; set; }
+        public virtual Preference Preference { get; set; }
     }
 
     public enum InstallmentType
