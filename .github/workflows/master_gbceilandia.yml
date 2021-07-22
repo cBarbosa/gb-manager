@@ -47,7 +47,7 @@ jobs:
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'massificados-apidev1'
+        app-name: 'gbceilandia'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_ceef5865c5ad4aed9eb35ec8c3dc6c5d }}
         package: .
