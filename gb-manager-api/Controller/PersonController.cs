@@ -46,6 +46,15 @@ namespace gb_manager.Controller
             return Ok(result);
         }
 
+        [HttpGet("{recordId}")]
+        public async Task<IActionResult> GetByRecordId(
+            [FromRoute] Guid recordId)
+        {
+            var result = await service.GetByRecordId(recordId);
+
+            return Ok(result);
+        }
+
         [HttpGet("{recordId}/contracts")]
         public async Task<IActionResult> GetContracts(
             [FromRoute] Guid recordId)
